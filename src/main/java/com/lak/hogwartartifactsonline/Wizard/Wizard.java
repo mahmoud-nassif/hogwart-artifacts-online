@@ -11,6 +11,7 @@ import java.util.List;
 @Entity
 public class Wizard implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String name;
 
@@ -50,5 +51,10 @@ public class Wizard implements Serializable {
 
     public Integer getNumberOfArtifacts() {
         return this.getArtifacts().size();
+    }
+
+    public void removeAllArtifacts(){
+        this.artifacts.stream().forEach(artifact -> artifact.setWizard(null));
+        this.artifacts= new ArrayList<>();
     }
 }

@@ -1,6 +1,7 @@
 package com.lak.hogwartartifactsonline.system.exception;
 
 import com.lak.hogwartartifactsonline.Artifact.ArtifactNotFoundException;
+import com.lak.hogwartartifactsonline.Wizard.WizardNotFoundException;
 import com.lak.hogwartartifactsonline.system.Result;
 import com.lak.hogwartartifactsonline.system.StatusCode;
 import org.springframework.http.HttpStatus;
@@ -35,5 +36,10 @@ public class ExceptionHandlerAdvice {
             map.put(key, val);
         });
         return new Result(false, StatusCode.INVALID_ARGUMENT, "Provided arguments are invalid, see data for details.", map);
+    }
+    @ExceptionHandler(WizardNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    Result handleWizardNotFoundException(WizardNotFoundException ex){
+        return new Result(false,StatusCode.NOT_FOUND, ex.getMessage(),null);
     }
 }
