@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping("/api/v1/artifacts")
+@RequestMapping("${baseUrl}/artifacts")
 public class ArtifactController {
     private final ArtifactService artifactService;
     private final ArtifactToArtifactDtoConverter artifactToArtifactDtoConverter;
@@ -42,7 +42,7 @@ public class ArtifactController {
     public Result addArtifact(@Valid @RequestBody ArtifactDto artifactDto){
        Artifact artifact= this.artifactDtoToArtifactConverter.convert(artifactDto);
         Artifact returnedArtifact= artifactService.save(artifact);
-        return new Result(true,StatusCode.SUCCESS,"save success",returnedArtifact);
+        return new Result(true,StatusCode.SUCCESS,"save success",artifactToArtifactDtoConverter.convert(returnedArtifact));
     }
 
     @PutMapping("/{artifactId}")
