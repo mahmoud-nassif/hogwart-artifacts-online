@@ -1,6 +1,8 @@
 package com.lak.hogwartartifactsonline.Wizard;
 
 import com.lak.hogwartartifactsonline.Artifact.Artifact;
+import com.lak.hogwartartifactsonline.Artifact.ArtifactNotFoundException;
+import com.lak.hogwartartifactsonline.Artifact.ArtifactRepository;
 import com.lak.hogwartartifactsonline.Artifact.utils.IdWorker;
 import com.lak.hogwartartifactsonline.Wizard.converter.WizradToWizardDtoConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ public class WizardService {
 
     @Autowired
     WizardRepository wizardRepository;
+    @Autowired
+    ArtifactRepository artifactRepository;
     @Autowired
     IdWorker idWorker;
 
@@ -42,5 +46,17 @@ public class WizardService {
         Wizard wizard= wizardRepository.findById(wizardId).orElseThrow(()->new WizardNotFoundException(wizardId+""));
         wizard.removeAllArtifacts();
         wizardRepository.deleteById(wizardId);
+    }
+
+    public void assignArtifact(int wizardId,int artifactId){
+       Artifact artifact= artifactRepository.findById(artifactId+"").orElseThrow(()->new ArtifactNotFoundException(artifactId+""));
+       Wizard wizard = wizardRepository.findById(wizardId).orElseThrow(()->new WizardNotFoundException(wizardId+""));
+
+       //if artifact has wizard deattach it
+        if(artifact.getWizard() != null){
+            artifact.getWizard().deattachArtifact(artifact);
+        }
+       wizard.addArtifact(artifact);
+//       wizardRepository.save(wizard);
     }
 }

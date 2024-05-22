@@ -1,6 +1,7 @@
 package com.lak.hogwartartifactsonline.Wizard;
 
 import com.lak.hogwartartifactsonline.Artifact.Artifact;
+import com.lak.hogwartartifactsonline.Artifact.ArtifactNotFoundException;
 import com.lak.hogwartartifactsonline.Artifact.ArtifactRepository;
 import com.lak.hogwartartifactsonline.Artifact.ArtifactService;
 import com.lak.hogwartartifactsonline.Artifact.utils.IdWorker;
@@ -28,6 +29,8 @@ import java.util.Optional;
 public class WizardServiceTest {
     @Mock
     WizardRepository wizardRepository;
+    @Mock
+    ArtifactRepository artifactRepository;
     @InjectMocks
     WizardService wizardService;
     @Mock
@@ -194,4 +197,84 @@ public class WizardServiceTest {
        verify(wizardRepository,times(1)).findById(Mockito.any(Integer.class));
     }
 
+    @Test
+    void testAssignArtifactSuccess(){
+        //given
+        Wizard wizard2=new Wizard();
+        wizard2.setId(2);
+        wizard2.setName("Mahmoud Nassif");
+
+        Artifact a1=new Artifact();
+        a1.setId(8);
+        a1.setName("sword");
+        a1.setDescription("highly recommended sword to kill people");
+        a1.setImageUrl("url");
+
+        given(wizardRepository.findById(wizard2.getId())).willReturn(Optional.of(wizard2));
+        given(artifactRepository.findById(a1.getId().toString())).willReturn(Optional.of(a1));
+
+        //when
+        this.wizardService.assignArtifact(wizard2.getId(),a1.getId());
+        //then
+        assertThat(a1.getWizard().getId()).isEqualTo(wizard2.getId());
+        assertThat(a1.getWizard().getName()).isEqualTo(wizard2.getName());
+        assertThat(wizard2.getArtifacts()).contains(a1);
+        assertThat(wizard2.getArtifacts()).size().isEqualTo(1);
+
+
+    }
+    @Test
+    void testAssignArtifact_WizardNotFound(){
+        //given
+        Wizard wizard2=new Wizard();
+        wizard2.setId(2);
+        wizard2.setName("Mahmoud Nassif");
+
+        Artifact a1=new Artifact();
+        a1.setId(8);
+        a1.setName("sword");
+        a1.setDescription("highly recommended sword to kill people");
+        a1.setImageUrl("url");
+
+        given(wizardRepository.findById(5)).willReturn(Optional.empty());
+        given(artifactRepository.findById(8+"")).willReturn(Optional.of(a1));
+
+        //when
+        //then
+        Throwable thrown = assertThrows(WizardNotFoundException.class,()->{
+            this.wizardService.assignArtifact(5,8);
+        });
+        assertThat(thrown).isInstanceOf(WizardNotFoundException.class).hasMessage(thrown.getMessage());
+
+
+
+    }
+
+    @Test
+    void testAssignArtifact_ArtifactNotFound(){
+        //given
+        Wizard wizard2=new Wizard();
+        wizard2.setId(2);
+        wizard2.setName("Mahmoud Nassif");
+
+        Artifact a1=new Artifact();
+        a1.setId(8);
+        a1.setName("sword");
+        a1.setDescription("highly recommended sword to kill people");
+        a1.setImageUrl("url");
+
+        given(artifactRepository.findById(8+"")).willReturn(Optional.empty());
+
+        //when
+        //then
+
+        Throwable thrown = assertThrows(ArtifactNotFoundException.class,()->{
+            this.wizardService.assignArtifact(5,8);
+        });
+
+        assertThat(thrown).isInstanceOf(ArtifactNotFoundException.class).hasMessage(thrown.getMessage());
+
+
+
+    }
 }
