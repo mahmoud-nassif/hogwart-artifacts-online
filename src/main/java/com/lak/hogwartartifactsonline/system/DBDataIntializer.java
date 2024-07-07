@@ -5,6 +5,9 @@ import com.lak.hogwartartifactsonline.Artifact.ArtifactNotFoundException;
 import com.lak.hogwartartifactsonline.Artifact.ArtifactRepository;
 import com.lak.hogwartartifactsonline.Wizard.Wizard;
 import com.lak.hogwartartifactsonline.Wizard.WizardRepository;
+import com.lak.hogwartartifactsonline.hogwartsuser.HogwartsUser;
+import com.lak.hogwartartifactsonline.hogwartsuser.UserRepository;
+import com.lak.hogwartartifactsonline.hogwartsuser.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -15,10 +18,12 @@ public class DBDataIntializer implements CommandLineRunner {
 
     private final ArtifactRepository artifactRepository;
     private final WizardRepository wizardRepository;
+    private final UserService userService;
 
-    public DBDataIntializer(ArtifactRepository artifactRepository, WizardRepository wizardRepository) {
+    public DBDataIntializer(ArtifactRepository artifactRepository, WizardRepository wizardRepository, UserService userService) {
         this.artifactRepository = artifactRepository;
         this.wizardRepository = wizardRepository;
+        this.userService = userService;
     }
 
 
@@ -82,6 +87,33 @@ public class DBDataIntializer implements CommandLineRunner {
         this.wizardRepository.save(w3);
 
         this.artifactRepository.save(a6);
+
+
+        // Create some users.
+        HogwartsUser u1 = new HogwartsUser();
+        u1.setId(1);
+        u1.setUsername("john");
+        u1.setPassword("123456");
+        u1.setEnabled(true);
+        u1.setRoles("admin user");
+
+        HogwartsUser u2 = new HogwartsUser();
+        u2.setId(2);
+        u2.setUsername("eric");
+        u2.setPassword("654321");
+        u2.setEnabled(true);
+        u2.setRoles("user");
+
+        HogwartsUser u3 = new HogwartsUser();
+        u3.setId(3);
+        u3.setUsername("tom");
+        u3.setPassword("qwerty");
+        u3.setEnabled(false);
+        u3.setRoles("user");
+
+        this.userService.save(u1);
+        this.userService.save(u2);
+        this.userService.save(u3);
 
     }
 }
